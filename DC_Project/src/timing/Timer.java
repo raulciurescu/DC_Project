@@ -1,50 +1,46 @@
+// Timer.java
 package timing;
 
 public class Timer implements ITimer {
-    private long startTime; // Stores the start time in nanoseconds
-    private long elapsedTime; // Stores the total elapsed time in nanoseconds
-    private boolean isRunning; // Indicates whether the timer is running or paused
+    private long startTime;
+    private long totalTime;
 
     public Timer() {
-        this.elapsedTime = 0;
-        this.isRunning = false;
+        this.startTime = 0;
+        this.totalTime = 0;
     }
 
     @Override
     public void start() {
-        if (!isRunning) {
-            startTime = System.nanoTime();
-            isRunning = true;
-        }
+        startTime = System.nanoTime();
+        totalTime = 0; // Reset total time
     }
 
     @Override
     public long stop() {
-        if (isRunning) {
-            long endTime = System.nanoTime();
-            elapsedTime += endTime - startTime;
-            isRunning = false;
+        if (startTime == 0) {
+            throw new IllegalStateException("Timer has not been started.");
         }
-        return elapsedTime;
+        long endTime = System.nanoTime();
+        totalTime += (endTime - startTime);
+        startTime = 0; // Reset start time
+        return totalTime;
     }
 
     @Override
     public void resume() {
-        if (!isRunning) {
-            startTime = System.nanoTime();
-            isRunning = true;
-        }
+        startTime = System.nanoTime();
     }
 
     @Override
     public long pause() {
-        if (isRunning) {
-            long pauseTime = System.nanoTime();
-            elapsedTime += pauseTime - startTime;
-            isRunning = false;
-            startTime = pauseTime;
-            return pauseTime - startTime;
+        if (startTime == 0) {
+            throw new IllegalStateException("Timer has not been started.");
         }
-        return 0; // Timer is already paused
+        long currentTime = System.nanoTime();
+        long elapsedTime = currentTime - startTime;
+        startTime = currentTime; // Update start time for resume
+        totalTime += elapsedTime;
+        return elapsedTime;
     }
 }

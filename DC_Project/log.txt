@@ -1,0 +1,4 @@
+Logging to a file...
+123
+Multiple values: 1 2 3 
+Another message
